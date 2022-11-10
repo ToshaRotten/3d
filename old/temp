@@ -1,0 +1,44 @@
+uv := Vector2D{float64(i), float64(j)}
+				temp_vector := Vector2D{float64(screen.width), float64(screen.height)}
+				uv.Sub(temp_vector)
+				uv.MultiplyByScalar(2 - 1)
+				uv.MultiplyByScalar(screen.aspect)
+				uv.MultiplyByScalar(screen.pixelAspect)
+
+				ro := Vector3D{-6, 0, 0}
+				rd := Vector3D{2, uv.x, uv.y}
+				rd = rd.Normalize()
+
+				ro.RotateX(0.25)
+				rd.RotateY(0.25)
+				ro.RotateZ(float64(t) * float64(0.01))
+				rd = rd.RotateZ(float64(t) * float64(0.01))
+				var diff float64
+				diff = 1
+
+				var MinIt float64
+				MinIt = 99999
+
+				var intersection Vector2D
+				intersection = Sphere(ro.Sub(spherePos), rd, 1)
+
+				var n Vector3D
+				var albedo float64
+				albedo = 1
+
+				if intersection.x > 0 {
+					itPoint := Vector3D{}
+					itPoint = ro.Sub(spherePos).Add(rd.MultiplyByScalar(intersection.x))
+					MinIt = intersection.x
+					n = itPoint.Normalize()
+				}
+
+				if MinIt < 99999 {
+					diff *= n.Dot(light.MultiplyByScalar(0.5).MultiplyByScalar(albedo))
+					ro = ro.Add(rd.MultiplyByScalar(MinIt - 0.01))
+				}
+
+				var color float64
+				color = diff * 16
+				color = clamp(color, 0, float64(len(gradient)))
+				screen.matrix.cells[i][j] = gradient[int(color)]
