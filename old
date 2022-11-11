@@ -1,0 +1,48 @@
+func (screen *Screen) Animation(times int) {
+	var color float64
+	uv := Vector2D{0, 0}
+	// Camera position
+	var camera Camera
+	camera.vector = Vector3D{0, 0, 0}
+	// Collision ray
+	collisionRay := Vector3D{0, 0, 0}
+	light := Vector3D{0, 0, 0}
+	itPoint := Vector3D{0, 0, 0}
+
+	// n := Vector3D{0, 0, 0}
+	// var diff float64
+
+	gradient := []rune{32, 46, 58, 33, 47, 114, 40, 108, 49, 90, 52, 72, 57, 87, 56, 36, 64}
+	for t := 0; t < times; t++ {
+		for i := 0; i < screen.height; i++ {
+			for j := 0; j < screen.width; j++ {
+				uv = Vector2D{float64(i) / float64(screen.height), float64(j) / float64(screen.width)}
+				uv = uv.MultiplyByScalar(2)
+				uv = uv.Sub(Vector2D{1.0, 1.0})
+				uv.y *= screen.aspect * screen.pixelAspect
+				camera.vector = Vector3D{-8, 0, 0}
+				collisionRay = Vector3D{2, uv.x, uv.y}
+				collisionRay = collisionRay.Normalize()
+
+				light = Vector3D{math.Sin((float64(t)) * 0.001), math.Cos((float64(t) * 0.001)), -1.0}
+				light = light.Normalize()
+
+				var intersection Vector2D
+				intersection = Sphere(camera.vector, collisionRay, 3)
+
+				if intersection.x > 0 {
+					itPoint = itPoint.Add(camera.vector).Add(collisionRay).MultiplyByScalar(intersection.x)
+					//n = itPoint.Normalize()
+					color = 10
+				} else {
+					color = 1
+				}
+
+				color = clamp(color, 0, float64(len(gradient)))
+				screen.matrix.cells[i][j] = gradient[int(color)]
+
+			}
+		}
+		screen.PrintScreen()
+	}
+}
