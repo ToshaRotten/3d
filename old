@@ -6,7 +6,7 @@ func (screen *Screen) Animation(times int) {
 	camera.vector = Vector3D{0, 0, 0}
 	// Collision ray
 	collisionRay := Vector3D{0, 0, 0}
-	light := Vector3D{0, 0, 0}
+	light := Vector3D{-0.5, 0.5, -1.0}
 	itPoint := Vector3D{0, 0, 0}
 
 	// n := Vector3D{0, 0, 0}
@@ -28,7 +28,7 @@ func (screen *Screen) Animation(times int) {
 				light = light.Normalize()
 
 				var intersection Vector2D
-				intersection = Sphere(camera.vector, collisionRay, 3)
+				intersection = camera.vector.x
 
 				if intersection.x > 0 {
 					itPoint = itPoint.Add(camera.vector).Add(collisionRay).MultiplyByScalar(intersection.x)
